@@ -3,9 +3,34 @@ import json
 import requests
 from secrets import spotify_client_id, spotify_secret
 
+import os
+
+import google_auth_oauthlib.flow
+import googleapiclient.discovery
+import googleapiclient.errors
+
 class Playlists:
     def __init__(self):
         self.client_id = spotify_client_id
+        self.youtube_client_id = self.get_youtube_client
+
+    def get_youtube_client(self):
+
+        scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
+
+        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
+        api_service_name = "youtube"
+        api_version = "v3"
+        client_secrets_file = "YOUR_CLIENT_SECRET_FILE.json"
+
+        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(client_secrets_file, scopes)
+
+        credentials = flow.run_console()
+
+        youtube = googleapiclient.discovery.build(api_service_name, api_version, credentials=credentials)
+
+        return youtube
 
     def create_playlist(self):
 
